@@ -3,7 +3,13 @@ package br.com.wcanquino.rest;
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.request;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -41,5 +47,27 @@ public class OlaMundoTest {
 		.then()//Validations
 			.assertThat()
 			.statusCode(200);
+	}
+	
+	@Test
+	public void devoConhecerMatchersHamcrest() {
+		Assert.assertThat("Maria", Matchers.is("Maria"));
+		Assert.assertThat(123, Matchers.is(123));
+		Assert.assertThat(123, Matchers.isA(Integer.class));
+		Assert.assertThat(123d, Matchers.isA(Double.class));
+		Assert.assertThat(123d, Matchers.greaterThan(120d));
+		Assert.assertThat(123d, Matchers.lessThan(130d));
+		
+		List<Integer> odds = Arrays.asList(1, 3, 5, 7, 9);
+		assertThat(odds, hasSize(5));
+		assertThat(odds, contains(1, 3, 5, 7, 9));
+		assertThat(odds, containsInAnyOrder(1, 3, 5, 7, 9));
+		assertThat(odds, hasItem(1));
+		assertThat(odds, hasItems(1, 3));
+		
+		assertThat("Maria", is(not("Joao")));
+		assertThat("Maria", anyOf(is("Maria"), is("Joaquina")));
+		
+		assertThat("Joaquina", allOf(startsWith("Joa"), endsWith("ina"), containsString("qui")));
 	}
 }
