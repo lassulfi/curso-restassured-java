@@ -43,5 +43,17 @@ public class UserJsonTest {
 		int id = JsonPath.from(response.asString()).getInt("id");
 		Assert.assertEquals(1, id);		
 	}
+	
+	@Test
+	public void deverVerificarSegundoNivel() {
+		given()
+		.when()
+			.get("https://restapi.wcaquino.me/users/1")
+		.then()
+			.statusCode(200)
+			.body("id", is(1))
+			.body("name", containsString("Silva"))
+			.body("age", greaterThan(18));
+	}
 
 }
