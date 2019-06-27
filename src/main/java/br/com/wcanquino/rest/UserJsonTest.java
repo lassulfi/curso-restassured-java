@@ -1,6 +1,7 @@
 package br.com.wcanquino.rest;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
@@ -8,7 +9,8 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import org.hamcrest.Matchers;
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -83,6 +85,21 @@ public class UserJsonTest {
 		.then()
 			.statusCode(404)
 			.body("error", is("Usuário inexistente"))
+		;
+	}
+	
+	@Test
+	public void deveVerificarListaRaiz() {
+		given()
+		.when()
+			.get("https://restapi.wcaquino.me/users")
+		.then()
+			.statusCode(200)
+			.body("$", hasSize(3))
+			.body("name", hasItems("João da Silva", "Maria Joaquina", "Ana Júlia"))
+			.body("age[1]", is(25))
+			.body("filhos.name", hasItem(Arrays.asList("Zezinho", "Luizinho")))
+			.body("salary", contains(1234.5677f, 2500, null))
 		;
 	}
 }
