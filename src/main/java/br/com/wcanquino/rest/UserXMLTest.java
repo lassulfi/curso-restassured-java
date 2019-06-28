@@ -25,4 +25,29 @@ public class UserXMLTest {
 			.body("user.filhos.name", hasItems("Zezinho", "Luizinho"))
 		;
 	}
+	
+	@Test
+	public void devoTrabalharComXMLNaRaiz() {
+		given()
+		.when()
+			.get("http://restapi.wcaquino.me/usersXML/3")
+		.then()
+			.statusCode(200)
+			
+			.rootPath("user")
+			.body("@id", is("3"))
+			.body("name", is("Ana Julia"))
+			
+			.rootPath("user.filhos")
+			.body("name.size()", is(2))
+			
+			.detachRootPath("filhos")
+			.body("filhos.name[0]", is("Zezinho"))
+			.body("filhos.name[1]", is("Luizinho"))
+			
+			.appendRootPath("filhos")
+			.body("name", hasItem("Luizinho"))
+			.body("name", hasItems("Zezinho", "Luizinho"))
+		;
+	}
 }
