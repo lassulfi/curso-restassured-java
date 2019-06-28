@@ -1,12 +1,17 @@
 package br.com.wcanquino.rest;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasXPath;
 import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
 
+import org.hamcrest.Matchers;
+import org.hamcrest.xml.HasXPath;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -88,5 +93,28 @@ public class UserXMLTest {
 		Assert.assertEquals(2, nomes.size());
 		Assert.assertEquals("Maria Joaquina".toUpperCase(), nomes.get(0).toString().toUpperCase());
 		Assert.assertTrue("ANA JULIA".equalsIgnoreCase(nomes.get(1).toString()));
+	}
+	
+	@Test
+	public void devoFazerPesquisasAvancadasComXPath() {
+		given()
+		.when()
+			.get("http://restapi.wcaquino.me/usersXML")
+		.then()
+			.statusCode(200)
+			.body(hasXPath("count(/users/user)", is("3")))
+			.body(hasXPath("/users/user[@id = '1']"))
+			.body(hasXPath("//user[@id = '1']"))
+			.body(hasXPath("//name[text() = 'Luizinho']/../../name", is("Ana Julia")))
+			.body(hasXPath("//name[text() = 'Ana Julia']/following-sibling::filhos", allOf(containsString("Zezinho"), containsString("Luizinho"))))
+			.body(hasXPath("/users/user/name", is("João da Silva")))
+			.body(hasXPath("//name", is("João da Silva")))
+			.body(hasXPath("/users/user[2]/name", is("Maria Joaquina")))
+			.body(hasXPath("/users/user[last()]/name", is("Ana Julia")))
+			.body(hasXPath("count(/users/user/name[contains(., 'n')])", is("2")))
+			.body(hasXPath("//users[age < 24]/name", is("Ana Julia")))
+			.body(hasXPath("//users[age > 20 and age < 30]/name", is("Maria Joaquina")))
+			.body(hasXPath("//users[age > 20][age < 30]/name", is("Maria Joaquina")))
+		;
 	}
 }
