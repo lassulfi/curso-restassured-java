@@ -13,17 +13,28 @@ import java.util.ArrayList;
 import org.hamcrest.Matchers;
 import org.hamcrest.xml.HasXPath;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.restassured.RestAssured;
 import io.restassured.internal.path.xml.NodeImpl;
 
 public class UserXMLTest {
+	
+	@BeforeClass
+	public static void setup() {
+		RestAssured.baseURI = "https://restapi.wcaquino.me";
+//		RestAssured.port = 443;
+//		RestAssured.basePath = "/v2";
+	}
 
 	@Test
 	public void devoTrabalharComXML() {
+		
 		given()
+			.log().all()
 		.when()
-			.get("http://restapi.wcaquino.me/usersXML/3")
+			.get("/usersXML/3")
 		.then()
 			.statusCode(200)
 			.body("user.@id", is("3"))
@@ -39,8 +50,9 @@ public class UserXMLTest {
 	@Test
 	public void devoTrabalharComXMLNaRaiz() {
 		given()
+			.log().all()
 		.when()
-			.get("http://restapi.wcaquino.me/usersXML/3")
+			.get("/usersXML/3")
 		.then()
 			.statusCode(200)
 			
@@ -65,7 +77,7 @@ public class UserXMLTest {
 	public void devoFazerPesquisasAvancadasComXML() {
 		given()
 		.when()
-			.get("http://restapi.wcaquino.me/usersXML")
+			.get("/usersXML")
 		.then()
 			.statusCode(200)
 			.body("users.user.size()", is(3))
@@ -84,7 +96,7 @@ public class UserXMLTest {
 	public void devoFazerPesquisasAvancadasComXMLEJava() {
 		ArrayList<NodeImpl> nomes = given()
 		.when()
-			.get("http://restapi.wcaquino.me/usersXML")
+			.get("/usersXML")
 		.then()
 			.statusCode(200)
 			.extract().path("users.user.name.findAll{it.toString().contains('n')}")
@@ -99,7 +111,7 @@ public class UserXMLTest {
 	public void devoFazerPesquisasAvancadasComXPath() {
 		given()
 		.when()
-			.get("http://restapi.wcaquino.me/usersXML")
+			.get("/usersXML")
 		.then()
 			.statusCode(200)
 			.body(hasXPath("count(/users/user)", is("3")))
@@ -112,9 +124,9 @@ public class UserXMLTest {
 			.body(hasXPath("/users/user[2]/name", is("Maria Joaquina")))
 			.body(hasXPath("/users/user[last()]/name", is("Ana Julia")))
 			.body(hasXPath("count(/users/user/name[contains(., 'n')])", is("2")))
-			.body(hasXPath("//users[age < 24]/name", is("Ana Julia")))
-			.body(hasXPath("//users[age > 20 and age < 30]/name", is("Maria Joaquina")))
-			.body(hasXPath("//users[age > 20][age < 30]/name", is("Maria Joaquina")))
+			.body(hasXPath("//user[age < 24]/name", is("Ana Julia")))
+			.body(hasXPath("//user[age > 20 and age < 30]/name", is("Maria Joaquina")))
+			.body(hasXPath("//user[age > 20][age < 30]/name", is("Maria Joaquina")))
 		;
 	}
 }
