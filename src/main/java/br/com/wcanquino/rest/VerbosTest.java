@@ -7,6 +7,8 @@ import static org.hamcrest.Matchers.nullValue;
 
 import org.junit.Test;
 
+import io.restassured.http.ContentType;
+
 public class VerbosTest {
 
 	@Test
@@ -27,6 +29,23 @@ public class VerbosTest {
 	}
 	
 	@Test
+	public void deveSalvarUsuarioViaXML() {
+		given()
+			.log().all()
+			.contentType(ContentType.XML)
+			.body("<user><name>Jose Carlos</name><age>50</age></user>")
+		.when()
+			.post("https://restapi.wcaquino.me/usersXML")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.body("user.@id", is(notNullValue()))
+			.body("user.name", is("Jose Carlos"))
+			.body("user.age", is("50"))
+		;
+	}
+	
+	@Test
 	public void naoDeveSalvarUsuarioSemNome() {
 		given()
 			.log().all()
@@ -42,3 +61,5 @@ public class VerbosTest {
 	;
 	}
 }
+
+
