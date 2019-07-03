@@ -2,6 +2,7 @@ package br.com.wcanquino.rest;
 
 public class User {
 	
+	private Long id;
 	private String name;
 	private Integer age;
 	private Double salary;
@@ -10,6 +11,12 @@ public class User {
 		super();
 		this.name = name;
 		this.age = age;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
 	}
 	public String getName() {
 		return name;
@@ -29,6 +36,19 @@ public class User {
 	public void setSalary(Double salary) {
 		this.salary = salary;
 	}
-
 	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("User [id=");
+		builder.append(id);
+		builder.append(", name=");
+		builder.append(name);
+		builder.append(", age=");
+		builder.append(age);
+		builder.append(", salary=");
+		builder.append(salary);
+		builder.append("]");
+		return builder.toString();
+	}	
 }

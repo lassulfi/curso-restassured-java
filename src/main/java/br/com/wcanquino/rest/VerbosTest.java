@@ -4,6 +4,8 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,6 +71,28 @@ public class VerbosTest {
 			.body("name", is("Usuario via objeto"))
 			.body("age", is(35))
 		;
+	}
+	
+	@Test
+	public void deveDeserializarObjetoAoSalvarUsuario() {
+		User user = new User("Usuario deserializado", 35);
+		
+		User usuarioInserido = given()
+			.log().all()
+			.contentType("application/json")
+			.body(user)
+		.when()
+			.post("https://restapi.wcaquino.me/users")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.extract().body().as(User.class)
+		;
+		
+		System.out.println(usuarioInserido);
+		assertThat(usuarioInserido.getId(), notNullValue());
+		assertEquals("Usuario deserializado", usuarioInserido.getName());
+		assertThat(usuarioInserido.getAge(), is(35));
 	}
 	
 	@Test

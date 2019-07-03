@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.lessThan;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
