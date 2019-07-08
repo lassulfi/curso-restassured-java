@@ -5,8 +5,11 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class FileTest {
@@ -50,5 +53,24 @@ public class FileTest {
 			.time(lessThan(10000L))
 			.statusCode(413)
 		;
+	}
+	
+	@Test
+	public void deveBaixarArquivo() throws IOException {
+		byte[] image = given()
+			.log().all()
+		.when()
+			.get("http://restapi.wcaquino.me/download")
+		.then()
+			.statusCode(200)
+			.extract().asByteArray()
+		;
+		
+		File file = new File("src/main/resources/file.jpg");
+		OutputStream out = new FileOutputStream(file);
+		out.write(image);
+		out.close();
+		
+		Assert.assertThat(file.length(), lessThan(100000L));
 	}
 }
