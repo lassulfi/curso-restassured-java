@@ -2,9 +2,11 @@ package br.com.wcanquino.rest;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 
 import java.io.File;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 public class FileTest {
@@ -33,6 +35,20 @@ public class FileTest {
 			.log().all()
 			.statusCode(200)
 			.body("name", is("man.png"))
+		;
+	}
+	
+	@Test
+	public void naoDeveFazerUploadDeArquivoGrande() {
+		given()
+			.log().all()
+			.multiPart("arquivo", new File("src/main/resources/DSC_0359.JPG"))
+		.when()
+			.post("http://restapi.wcaquino.me/upload")
+		.then()
+			.log().all()
+			.time(lessThan(10000L))
+			.statusCode(413)
 		;
 	}
 }
