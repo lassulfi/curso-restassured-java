@@ -7,9 +7,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 import io.restassured.http.ContentType;
+import io.restassured.path.xml.XmlPath;
+import io.restassured.path.xml.XmlPath.CompatibilityMode;
 
 public class AuthTest {
 
@@ -129,7 +132,42 @@ public class AuthTest {
 			.log().all()
 			.statusCode(200)
 			.body("nome", Matchers.hasItem("Conta de testes"))
+		;	
+	}
+	
+	@Test
+	public void deveAcessarAplicacaoWeb() {
+		//login
+		String cookie = given()
+			.log().all()
+			.formParam("email", "luis@daniel")
+			.formParam("senha", "123456")
+			.contentType(ContentType.URLENC.withCharset("UTF-8"))
+		.when()
+			.post("http://seubarriga.wcaquino.me/logar")
+		.then()
+			.log().all()
+			.statusCode(200)
+			.extract().header("set-cookie")
 		;
 		
+		cookie = cookie.split("=")[1].split(";")[0];
+		
+		//obter a conta
+		String body = given()
+			.log().all()
+			.cookie("connect.sid", cookie)
+		.when()
+			.get("http://seubarriga.wcaquino.me/contas")
+		.then()
+			.log().all()
+			.statusCode(200)
+			.body("html.body.table.tbody.tr[0].td[0]", is("Conta de testes"))
+			.extract().body().asString();
+		;
+		
+		XmlPath xmlPath = new XmlPath(CompatibilityMode.HTML, body);
+		Assert.assertThat(xmlPath.getString("html.body.table.tbody.tr[0].td[0]"), is("Conta de testes"));
 	}
+	
 }
